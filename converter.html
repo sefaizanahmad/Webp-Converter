@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faizan Ahmad's Converter Pro</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    body{
+      background: #f8fafc;
+    }
+    #icv {
+      position: relative;
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 32px 16px;
+      background: #f8fafc;
+      border-radius: 20px;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: #0f172a;
+      line-height: 1.5;
+      box-sizing: border-box
+    }
+
+    #icv * {
+      box-sizing: border-box
+    }
+
+    #icv .top {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 4px;
+      width: 0;
+      background: #2563eb;
+      border-radius: 20px 0 0 0;
+      transition: width .2s
+    }
+
+    #icv .hd {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      gap: 12px
+    }
+
+    #icv h2 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      color: #1e293b;
+      line-height: 1.2
+    }
+
+    #icv h2 span {
+      color: #2563eb
+    }
+
+    #icv .sub {
+      margin: 2px 0 0;
+      color: #64748b;
+      font-size: 14px
+    }
+
+    #icv .cnt {
+      font: 12px ui-monospace, Consolas, monospace;
+      color: #94a3b8;
+      white-space: nowrap;
+      margin-top: 8px
+    }
+
+    #icv .card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 1px 2px #0f172a0d
+    }
+
+    #icv .ctl {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-end;
+      padding: 22px 24px;
+      margin-bottom: 20px
+    }
+
+    #icv .ctl>div {
+      min-width: 130px
+    }
+
+    #icv .ctl .q {
+      flex: 1;
+      min-width: 230px
+    }
+
+    #icv .lb {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #64748b;
+      margin-bottom: 8px
+    }
+
+    #icv .row {
+      display: flex;
+      align-items: center;
+      gap: 14px
+    }
+
+    #icv .qv {
+      font-size: 14px;
+      font-weight: 700;
+      color: #2563eb;
+      width: 40px
+    }
+
+    #icv input[type=range] {
+      flex: 1;
+      width: 100%;
+      height: 6px;
+      accent-color: #2563eb;
+      cursor: pointer
+    }
+
+    #icv select,
+    #icv input[type=number] {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 14px;
+      color: #0f172a;
+      outline: 0;
+      width: 100%
+    }
+
+    #icv select:focus,
+    #icv input[type=number]:focus {
+      box-shadow: 0 0 0 2px #3b82f6
+    }
+
+    #icv .go {
+      background: #2563eb;
+      color: #fff;
+      border: 0;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 11px 30px;
+      cursor: pointer;
+      box-shadow: 0 8px 16px #bfdbfe;
+      transition: .15s
+    }
+
+    #icv .go:hover {
+      background: #1d4ed8
+    }
+
+    #icv .go:active {
+      transform: scale(.96)
+    }
+
+    #icv .drop {
+      display: block;
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      padding: 48px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: .2s;
+      margin-bottom: 24px
+    }
+
+    #icv .drop:hover,
+    #icv .drop.on {
+      background: #eff6ff80;
+      border-color: #60a5fa
+    }
+
+    #icv .plus {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #eff6ff;
+      color: #2563eb;
+      margin-bottom: 14px
+    }
+
+    #icv .plus svg {
+      width: 30px;
+      height: 30px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2
+    }
+
+    #icv .drop b {
+      display: block;
+      font-size: 18px;
+      color: #334155;
+      font-weight: 600
+    }
+
+    #icv .drop span {
+      display: block;
+      color: #94a3b8;
+      font-size: 14px;
+      margin-top: 4px
+    }
+
+    #icv .gal {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(2, 1fr)
+    }
+
+    #icv .gal.c1 {
+      grid-template-columns: 1fr
+    }
+
+    #icv .gal.c3 {
+      grid-template-columns: repeat(3, 1fr)
+    }
+
+    #icv .gal.c4 {
+      grid-template-columns: repeat(4, 1fr)
+    }
+
+    @media(max-width:700px) {
+
+      #icv .gal,
+      #icv .gal.c3,
+      #icv .gal.c4 {
+        grid-template-columns: 1fr
+      }
+
+      #icv h2 {
+        font-size: 24px
+      }
+
+      #icv .hd {
+        flex-direction: column
+      }
+    }
+
+    #icv .it {
+      padding: 16px;
+      transition: .2s
+    }
+
+    #icv .it:hover {
+      border-color: #bfdbfe
+    }
+
+    #icv .th {
+      position: relative;
+      aspect-ratio: 16/9;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f1f5f9;
+      border: 1px solid #f1f5f9;
+      margin-bottom: 12px
+    }
+
+    #icv .th img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    #icv .sz {
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+      background: #fffffff2;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font: 10px ui-monospace, Consolas, monospace;
+      box-shadow: 0 1px 2px #0002
+    }
+
+    #icv .sz em {
+      font-style: normal;
+      color: #2563eb;
+      font-weight: 700
+    }
+
+    #icv .sz s {
+      color: #94a3b8;
+      margin-left: 4px
+    }
+
+    #icv .rm {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 26px;
+      height: 26px;
+      border: 0;
+      border-radius: 50%;
+      background: #0f172acc;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1
+    }
+
+    #icv .nm {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    #icv .qh {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px
+    }
+
+    #icv .qh label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase
+    }
+
+    #icv .qh span {
+      font-size: 10px;
+      font-weight: 700;
+      color: #2563eb;
+      background: #eff6ff;
+      padding: 0 6px;
+      border-radius: 4px
+    }
+
+    #icv .fm {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 12px
+    }
+
+    #icv .fm button {
+      background: transparent;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 6px 0;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .15s
+    }
+
+    #icv .fm button:hover {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #fff
+    }
+
+    #icv .bar {
+      display: none;
+      position: sticky;
+      bottom: 12px;
+      margin-top: 28px;
+      background: #0f172a;
+      color: #fff;
+      padding: 14px 20px;
+      border-radius: 16px;
+      flex-wrap: wrap;
+      gap: 14px 24px;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px #0f172a55;
+      z-index: 5
+    }
+
+    #icv .bar.on {
+      display: flex
+    }
+
+    #icv .bar .t {
+      font-size: 14px;
+      font-weight: 500;
+      color: #94a3b8
+    }
+
+    #icv .bar select {
+      background: #1e293b;
+      border-color: #334155;
+      color: #fff;
+      width: auto
+    }
+
+    #icv .bar .dl {
+      background: #2563eb;
+      color: #fff;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 32px;
+      font-weight: 700;
+      cursor: pointer
+    }
+
+    #icv .bar .dl:hover {
+      background: #3b82f6
+    }
+
+    #icv .bar .cl {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 14px;
+      cursor: pointer
+    }
+
+    #icv .info {
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+      margin: 18px 0 0
+    }
+
+    #icv :focus-visible {
+      outline: 3px solid #3b82f6;
+      outline-offset: 2px
+    }
+  </style>
+</head>
+
+<body>
+  <div id="icv">
+    <div class="top" id="icvTop"></div>
+
+    <div class="hd">
+      <div>
+        <h2>Faizan Ahmad's <span>Converter Pro</span></h2>
+        <p class="sub">Convert to JPEG, PNG, WEBP, PDF &amp; SVG</p>
+      </div>
+      <div class="cnt">FILES: <span id="icvN">0</span>/100</div>
+    </div>
+
+    <div class="card ctl">
+      <div class="q">
+        <span class="lb">Global Quality (updates all previews)</span>
+        <div class="row">
+          <input type="range" id="icvQ" min="5" max="100" value="92" aria-label="Quality">
+          <span class="qv" id="icvQv">92%</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="lb" for="icvW">Max Width (px)</label>
+        <input type="number" id="icvW" min="16" placeholder="Original">
+      </div>
+
+      <div>
+        <label class="lb" for="icvG">Grid View</label>
+        <select id="icvG">
+          <option value="c1">1</option>
+          <option value="c2" selected>2</option>
+          <option value="c3">3</option>
+          <option value="c4">4</option>
+        </select>
+      </div>
+
+      <button class="go" id="icvGo">Process All</button>
+    </div>
+
+    <label class="drop" id="icvDrop" for="icvFile">
+      <input type="file" id="icvFile" accept="image/*" multiple hidden>
+      <div class="plus">
+        <svg viewBox="0 0 24 24">
+          <path stroke-linecap="round" d="M12 4v16m8-8H4" />
+        </svg>
+      </div>
+      <b>Drop Images Here</b>
+      <span>Files are processed 100% locally in your browser</span>
+    </label>
+
+    <div class="gal c2" id="icvGal"></div>
+
+    <div class="bar" id="icvBar">
+      <span class="t">Batch Download As:</span>
+      <select id="icvF" aria-label="Batch format">
+        <option value="webp">WEBP (High Quality)</option>
+        <option value="webpl">WEBP Lossless (Max Quality)</option>
+        <option value="jpeg">JPEG (Standard)</option>
+        <option value="png">PNG (High Quality)</option>
+        <option value="pdf">PDF (Document)</option>
+        <option value="svg">SVG (Embedded)</option>
+      </select>
+      <button class="dl" id="icvAll">Download All Files (ZIP)</button>
+      <button class="cl" id="icvClear">Clear</button>
+    </div>
+
+    <p class="info">&copy; 2026 Copyrights all rights reserved. Developed by VynexSolutions</p>
+  </div>
+
+  <script>
+    (function () {
+      var $ = function (i) { return document.getElementById(i) };
+      var items = [], uid = 0, tm, MAX = 100, showBar = false;
+
+      var EXT = {
+        webp: 'webp',
+        webpl: 'webp',
+        jpeg: 'jpg',
+        png: 'png',
+        pdf: 'pdf',
+        svg: 'svg'
+      };
+
+      function fb(b) {
+        if (b < 1024) return b + ' B';
+        if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+        return (b / 1048576).toFixed(2) + ' MB';
+      }
+
+      function esc(s) {
+        return s.replace(/[&<>"]/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+        });
+      }
+
+      async function convert(it, f) {
+        var q = it.q / 100;
+        var mw = parseInt($('icvW').value) || 0;
+        var w = it.img.naturalWidth;
+        var h = it.img.naturalHeight;
+
+        if (mw && mw < w) {
+          h = Math.round(h * mw / w);
+          w = mw;
+        }
+
+        var c = document.createElement('canvas');
+        c.width = w;
+        c.height = h;
+
+        var x = c.getContext('2d');
+        x.imageSmoothingQuality = 'high';
+
+        if (f === 'jpeg' || f === 'pdf') {
+          x.fillStyle = '#fff';
+          x.fillRect(0, 0, w, h);
+        }
+
+        x.drawImage(it.img, 0, 0, w, h);
+
+        if (f === 'pdf') {
+          var p = new window.jspdf.jsPDF({
+            orientation: w > h ? 'l' : 'p',
+            unit: 'px',
+            format: [w, h],
+            compress: true
+          });
+          p.addImage(c.toDataURL('image/jpeg', q), 'JPEG', 0, 0, w, h);
+          return p.output('blob');
+        }
+
+        if (f === 'svg') {
+          return new Blob([
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">' +
+            '<image href="' + c.toDataURL('image/png') + '" width="' + w + '" height="' + h + '"/>' +
+            '</svg>'
+          ], { type: 'image/svg+xml' });
+        }
+
+        return new Promise(function (resolve) {
+          c.toBlob(
+            resolve,
+            'image/' + (f === 'webpl' ? 'webp' : f),
+            f === 'webpl' ? 1 : q
+          );
+        });
+      }
+
+      async function preview(it) {
+        var fv = $('icvF').value;
+        var b = await convert(it, fv);
+        var el = $('sz' + it.id);
+
+        if ((fv === 'webp' || fv === 'webpl') && b && b.type !== 'image/webp' && !window.__icvW) {
+          window.__icvW = 1;
+          alert('Is browser mein WEBP support nahi hai. Chrome ya Edge use karein.');
+        }
+
+        if (el && b) {
+          el.innerHTML = '<em>' + fb(b.size) + '</em><s>' + fb(it.file.size) + '</s>';
+        }
+      }
+
+      async function all(bar) {
+        var t = $('icvTop');
+
+        for (var i = 0; i < items.length; i++) {
+          await preview(items[i]);
+          if (bar) {
+            t.style.width = ((i + 1) / items.length * 100) + '%';
+          }
+        }
+
+        if (bar) {
+          setTimeout(function () {
+            t.style.width = '0';
+          }, 500);
+        }
+      }
+
+      function later() {
+        clearTimeout(tm);
+        tm = setTimeout(function () {
+          all(false);
+        }, 250);
+      }
+
+      function render() {
+        $('icvN').textContent = items.length;
+        $('icvBar').classList.toggle('on', showBar && items.length > 0);
+
+        $('icvGal').innerHTML = items.map(function (it) {
+          return '<div class="card it">' +
+            '<div class="th">' +
+            '<img src="' + it.url + '" alt="">' +
+            '<div class="sz" id="sz' + it.id + '">' + fb(it.file.size) + '</div>' +
+            '<button class="rm" data-rm="' + it.id + '" aria-label="Remove">&times;</button>' +
+            '</div>' +
+            '<div class="nm">' + esc(it.file.name) + '</div>' +
+            '<div class="qh">' +
+            '<label>Quality Control</label>' +
+            '<span id="qv' + it.id + '">' + it.q + '%</span>' +
+            '</div>' +
+            '<input type="range" min="5" max="100" value="' + it.q + '" data-q="' + it.id + '">' +
+            '<div class="fm">' +
+            ['webp', 'jpeg', 'png', 'pdf', 'svg'].map(function (f) {
+              return '<button data-dl="' + it.id + '" data-f="' + f + '">' +
+                (f === 'jpeg' ? 'JPEG' : f.toUpperCase()) +
+                '</button>';
+            }).join('') +
+            '</div>' +
+            '</div>';
+        }).join('');
+      }
+
+      function add(files) {
+        var list = Array.from(files)
+          .filter(function (f) { return f.type.indexOf('image/') === 0 })
+          .slice(0, MAX - items.length);
+
+        var n = 0;
+        if (!list.length) return;
+
+        list.forEach(function (file) {
+          var url = URL.createObjectURL(file);
+          var img = new Image();
+
+          function done() {
+            n++;
+            if (n === list.length) {
+              render();
+              all(false);
+            }
+          }
+
+          img.onload = function () {
+            items.push({
+              id: ++uid,
+              file: file,
+              url: url,
+              img: img,
+              q: parseInt($('icvQ').value)
+            });
+            done();
+          };
+
+          img.onerror = done;
+          img.src = url;
+        });
+      }
+
+      function save(b, name) {
+        var url = URL.createObjectURL(b);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        setTimeout(function () {
+          URL.revokeObjectURL(url);
+        }, 4000);
+      }
+
+      function nm(it, f) {
+        return it.file.name.replace(/\.[^.]+$/, '') + '.' + EXT[f];
+      }
+
+      $('icvFile').onchange = function (e) {
+        add(e.target.files);
+        e.target.value = '';
+      };
+
+      var dz = $('icvDrop');
+
+      ['dragenter', 'dragover'].forEach(function (t) {
+        dz.addEventListener(t, function (e) {
+          e.preventDefault();
+          dz.classList.add('on');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(function (t) {
+        dz.addEventListener(t, function (e) {
+          e.preventDefault();
+          dz.classList.remove('on');
+        });
+      });
+
+      dz.addEventListener('drop', function (e) {
+        add(e.dataTransfer.files);
+      });
+
+      $('icvQ').oninput = function () {
+        var v = parseInt(this.value);
+        $('icvQv').textContent = v + '%';
+
+        items.forEach(function (it) {
+          it.q = v;
+
+          var s = $('qv' + it.id);
+          if (s) s.textContent = v + '%';
+
+          var r = document.querySelector('#icv [data-q="' + it.id + '"]');
+          if (r) r.value = v;
+        });
+
+        later();
+      };
+
+      $('icvW').oninput = later;
+      $('icvF').onchange = later;
+
+      $('icvG').onchange = function () {
+        $('icvGal').className = 'gal ' + this.value;
+      };
+
+      $('icvGo').onclick = function () {
+        if (!items.length) return;
+
+        all(true).then(function () {
+          showBar = true;
+          $('icvBar').classList.add('on');
+        });
+      };
+
+      $('icvGal').addEventListener('input', function (e) {
+        var id = e.target.getAttribute('data-q');
+        if (!id) return;
+
+        var it = items.find(function (i) { return i.id == id });
+        if (!it) return;
+
+        it.q = parseInt(e.target.value);
+        $('qv' + id).textContent = it.q + '%';
+
+        clearTimeout(tm);
+        tm = setTimeout(function () {
+          preview(it);
+        }, 200);
+      });
+
+      $('icvGal').addEventListener('click', function (e) {
+        var r = e.target.getAttribute('data-rm');
+        var d = e.target.getAttribute('data-dl');
+
+        if (r) {
+          var removed = items.find(function (i) { return i.id == r });
+          if (removed) URL.revokeObjectURL(removed.url);
+
+          items = items.filter(function (i) { return i.id != r });
+          render();
+          all(false);
+        }
+
+        if (d) {
+          var it = items.find(function (i) { return i.id == d });
+          var f = e.target.getAttribute('data-f');
+
+          if (it && f) {
+            convert(it, f).then(function (b) {
+              save(b, nm(it, f));
+            });
+          }
+        }
+      });
+
+      $('icvClear').onclick = function () {
+        items.forEach(function (it) {
+          URL.revokeObjectURL(it.url);
+        });
+
+        items = [];
+        showBar = false;
+        render();
+      };
+
+      $('icvAll').onclick = async function () {
+        var b = this;
+        var f = $('icvF').value;
+        var z = new JSZip();
+        var seen = {};
+
+        b.textContent = 'Preparing ZIP...';
+
+        for (var it of items) {
+          var n = nm(it, f);
+
+          if (seen[n]) {
+            n = n.replace(/(\.[^.]+)$/, '-' + seen[n]++ + '$1');
+          } else {
+            seen[n] = 1;
+          }
+
+          z.file(n, await convert(it, f));
+        }
+
+        save(
+          await z.generateAsync({ type: 'blob' }),
+          'converted-images.zip'
+        );
+
+        b.textContent = 'Download All Files (ZIP)';
+      };
+    })();
+  </script>
+</body>
+
+</html>
